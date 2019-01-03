@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         ok = findViewById(R.id.ok);
 
         ok.setOnClickListener(v -> pager.setCurrentItem(Integer.valueOf(input.getText().toString().trim())));
-        indicator.setCount(20, 5, 0);
+        indicator.setCount(20, 8, 0);
         pager.setAdapter(new PagerAdapter() {
             @Override
             public int getCount() {

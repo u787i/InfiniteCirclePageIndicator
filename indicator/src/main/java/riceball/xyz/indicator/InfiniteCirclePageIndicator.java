@@ -149,14 +149,21 @@ public class InfiniteCirclePageIndicator extends View implements ViewPager.OnPag
             if (pointCount > dataCount) {
                 pointCount = dataCount;
             }
-            controlLine = new ControlLine(0, dataCount - 1);
+            controlLine = new ControlLine(0, dataCount);
             controlLine.setLine(selectedIndex, pointCount);
             this.selectedIndex = selectedIndex;
 
             for (int i = 0; i < dataCount; i++) {
-                Po po = new Po().setIndex(i).setRadius(getRadius()).setDrawX(getDrawX(i)).setDrawY(getDrawY(i));
+                Po po = new Po().setIndex(i).setDrawX(getDrawX(i)).setDrawY(getDrawY(i));
                 if (i == 0 || i == dataCount - 1 || controlLine.include(i)) {
+                    po.setRadius(getRadius());
                 } else {
+                    po.setRadius(getRadius() * SCALE_RATIO);
+                }
+                if (controlLine.isFirst(i) && controlLine.canMove(i - 1)) {
+                    po.setRadius(getRadius() * SCALE_RATIO);
+                }
+                if (controlLine.isLast(i) && controlLine.canMove(i + 1)) {
                     po.setRadius(getRadius() * SCALE_RATIO);
                 }
                 pos.put(i, po);
@@ -202,10 +209,10 @@ public class InfiniteCirclePageIndicator extends View implements ViewPager.OnPag
             int lastSelectedIndex = selectedIndex;
             selectedIndex = position;
             if (controlLine.include(position)) {
-                if (controlLine.isFirst(position)) {
+                if (controlLine.isFirst(position) && controlLine.canMove(controlLine.index - 1)) {
                     controlLine.moveTo(controlLine.index - 1);
                     doAnim(lastSelectedIndex);
-                } else if (controlLine.isLast(position)) {
+                } else if (controlLine.isLast(position) && controlLine.canMove(controlLine.index + 1)) {
                     controlLine.moveTo(controlLine.index + 1);
                     doAnim(lastSelectedIndex);
                 } else {
@@ -236,12 +243,12 @@ public class InfiniteCirclePageIndicator extends View implements ViewPager.OnPag
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
                     Po left = pos.get(controlLine.getFirst());
-                    if (left != null && controlLine.getFirst() != controlLine.limitStart) {
+                    if (left != null && controlLine.canMove(controlLine.getFirst() - 1)) {
                         left.radius = Math.min(left.radius, PoContainer.this.getRadius() * (float) animation.getAnimatedValue());
                     }
                     //
                     Po right = pos.get(controlLine.getLast());
-                    if (right != null && controlLine.getLast() != controlLine.limitEnd) {
+                    if (right != null && controlLine.canMove(controlLine.getLast() + 1)) {
                         right.radius = Math.min(right.radius, PoContainer.this.getRadius() * (float) animation.getAnimatedValue());
                     }
                 }
@@ -337,39 +344,45 @@ public class InfiniteCirclePageIndicator extends View implements ViewPager.OnPag
         int index;
         int length;
         int limitStart;
-        int limitEnd;
+        //        int limitEnd;
+        int limitLength;
 
-        public ControlLine(int limitStart, int limitEnd) {
-            if (limitEnd - limitStart < 0) {
+        public ControlLine(int limitStart, int limitLength) {
+            if (limitLength - limitStart < 0) {
                 throw new RuntimeException("ex: end > start");
             }
             this.limitStart = limitStart;
-            this.limitEnd = limitEnd;
+            this.limitLength = limitLength;
         }
 
         public void setLine(int index, int length) {
-            length = Math.min(length, limitEnd - limitStart);
+            length = Math.min(length, limitLength);
             index = fixIndex(index);
             this.index = index;
             this.length = length;
         }
 
         private int fixIndex(int index) {
+            if (index > limitStart + limitLength) index = limitStart + limitLength - 1;
             if (index < limitStart) index = limitStart;
-            if (index > limitEnd) index = limitEnd;
             return index;
         }
 
-        public void moveTo(int index) {
+        public boolean canMove(int index) {
+            return index >= limitStart && index < limitStart + limitLength - 1;
+        }
+
+        public int moveTo(int index) {
             index = fixIndex(index);
             if (index < limitStart) {
                 index = limitStart;
             }
-            if (index + length > limitEnd) {
-                this.index = limitEnd + 1 - (length);
+            if (index + length > limitStart + limitLength) {
+                this.index = limitStart + limitLength - length;
             } else {
                 this.index = index;
             }
+            return this.index;
         }
 
         public boolean include(int index) {
