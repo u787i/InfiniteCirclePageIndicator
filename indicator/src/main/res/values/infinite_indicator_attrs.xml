@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="InfiniteCirclePageIndicator">
+        <attr name="ind_radius" format="dimension" />
+        <attr name="ind_gap" format="dimension" />
+        <attr name="ind_unselected_color" format="color" />
+        <attr name="ind_selected_color" format="color" />
+    </declare-styleable>
+</resources>
