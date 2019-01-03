@@ -1,2 +1,3 @@
-类似小红书 pager indicator
+## 绫讳技灏忕孩涔︾殑 pager indicator
 
+![PrtScn](InfiniteCirclePageIndicator/art/PrtScn.png)
