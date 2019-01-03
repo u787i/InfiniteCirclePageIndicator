@@ -1,3 +1,3 @@
 ## 类似小红书的 pager indicator
 
-![PrtScn](InfiniteCirclePageIndicator/art/PrtScn.png)
+![PrtScn](https://raw.githubusercontent.com/u787i/InfiniteCirclePageIndicator/master/art/PrtScn.png)
