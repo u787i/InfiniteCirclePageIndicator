@@ -15,7 +15,7 @@
 
     <riceball.xyz.indicator.InfiniteCirclePageIndicator
         android:id="@+id/indicator"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:ind_gap="3dp"
         app:ind_radius="5dp"
